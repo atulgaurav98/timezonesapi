@@ -1,13 +1,5 @@
 package com.example.bean;
 
-import io.micronaut.context.annotation.InjectScope;
-import jakarta.inject.Inject;
-import jakarta.inject.Singleton;
-
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-
 public class Zone {
 
     private String city;

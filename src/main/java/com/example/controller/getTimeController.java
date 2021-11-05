@@ -14,7 +14,7 @@ import java.util.List;
 public class getTimeController {
     @Inject
     private IgetTimeService getTimeService;
-    //private IgetTimeService getTimeService=new getTimeService();
+
     @Get("/time")
     public List<Country> getAllCountriesTime(){
         return getTimeService.getCountryTime();

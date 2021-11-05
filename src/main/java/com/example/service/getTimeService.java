@@ -3,10 +3,6 @@ package com.example.service;
 import com.example.bean.Country;
 import com.example.bean.Zone;
 import com.example.dao.IgetTimeDao;
-import com.example.dao.getTimeDao;
-import io.micronaut.context.BeanContext;
-import io.micronaut.context.annotation.Context;
-import io.micronaut.context.annotation.InjectScope;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 
@@ -21,7 +17,7 @@ public class getTimeService implements IgetTimeService{
     private DateTimeFormatter d = DateTimeFormatter.ofPattern("dd MMM yyyy,hh:mm:ss a");
     @Inject
     private IgetTimeDao getTimeDao;
-    //private IgetTimeDao getTimeDao=new getTimeDao();
+
     @Override
     public List<Country> getCountryTime() {
         List<Country> listOfAllCountries=new ArrayList<>();

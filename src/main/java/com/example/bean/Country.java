@@ -1,8 +1,5 @@
 package com.example.bean;
 
-import jakarta.inject.Inject;
-import jakarta.inject.Singleton;
-
 import java.util.ArrayList;
 import java.util.List;
 
