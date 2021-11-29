@@ -59,11 +59,11 @@ jobs:
       # Setting up sonarqube for scanning the code to detects bugs, vulnerabilities and code smells
       - name: SonarQube Scan
         uses: kitabisa/sonarqube-action@v1.1.0
-          with:
-            # host is sonarqube server url
-            host: ${{ secrets.SONARQUBE_HOST }}
-            #  the login or authentication token of a SonarQube user with Execute Analysis permission on the project
-            login: ${{ secrets.SONARQUBE_TOKEN }}
+        with:
+          # host is sonarqube server url
+          host: ${{ secrets.SONARQUBE_HOST }}
+          #  the login or authentication token of a SonarQube user with Execute Analysis permission on the project
+          login: ${{ secrets.SONARQUBE_TOKEN }}
 
       - name: Before install
         run: |
