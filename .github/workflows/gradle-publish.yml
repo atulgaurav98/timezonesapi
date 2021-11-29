@@ -1,0 +1,88 @@
+#
+# name to be displayed on the GitHub actions bar
+#
+name: PR To Master Actions
+
+on:
+  pull_request:
+    branches: [ master, /^hotfix.*$/ ]
+jobs:
+  #
+  # Build JAR and run unit tests
+  #
+  build:
+    name: "Build JAR, run unit tests"
+    runs-on: [self-hosted,X64,Linux]
+    steps:
+
+      # Actions to clone the repository
+      - name: Clone ecommerce cart service repository
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      # Actions to clear out cache
+      - name: Before Cache
+        run: |
+          rm -f  /home/.gradle/caches/modules-2/modules-2.lock
+          rm -fr /home/.gradle/caches/*/plugin-resolution/
+
+      # Initial cache setup in cache locations
+      - name: Cache
+        uses: actions/cache@v2.1.5
+        with:
+          path: |
+            /home/.m2
+            /home/.gradle/caches/
+            /home/.gradle/wrapper/
+            /home/.sonar/cache
+
+      # Installing Java JDK 11
+      - name: Setup Java JDK
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11
+
+      # Installing Python
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.8'
+
+      # Installing other Python related dependencies
+      - name: Installing additional python dependencies
+        run: |
+          sudo apt-get install python3
+          sudo apt-get install python3-pip
+          sudo apt-get install python3-setuptools
+
+      # Setting up sonarqube for scanning the code to detects bugs, vulnerabilities and code smells
+      - name: SonarQube Scan
+        uses: kitabisa/sonarqube-action@v1.1.0
+          with:
+            # host is sonarqube server url
+            host: ${{ secrets.SONARQUBE_HOST }}
+            #  the login or authentication token of a SonarQube user with Execute Analysis permission on the project
+            login: ${{ secrets.SONARQUBE_TOKEN }}
+
+      - name: Before install
+        run: |
+          pip3 install --upgrade pip
+          pip3 install --upgrade awscli --user
+
+      # Setting up AWS configurations
+      - name: Configure AWS Credentials and profile Setup
+        env:
+          AWS_REGION: "us-east-1"
+        run: |
+          aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws configure set region $AWS_REGION
+          aws configure set profile.orderhub.aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws configure set profile.orderhub.aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      # Gradle builds for running unit test cases
+      - name: Script
+        run: |
+          echo "Building JAR and testing."
+          ./gradlew unitTest --refresh-dependencies generateBuildProperties jacocoTestReport sonarqube || travis_terminate 1;
