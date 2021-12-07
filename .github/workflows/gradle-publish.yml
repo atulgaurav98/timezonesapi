@@ -1,88 +1,50 @@
-#
-# name to be displayed on the GitHub actions bar
-#
-name: PR To Master Actions
-
 on:
-  pull_request:
-    branches: [ master, /^hotfix.*$/ ]
+  push:
+    branches:
+      - master
 jobs:
-  #
-  # Build JAR and run unit tests
-  #
   build:
-    name: "Build JAR, run unit tests"
-    runs-on: [self-hosted,X64,Linux]
-    steps:
+    - name: Build
+    -- name: Checkout
+      uses: actions/checkout@v2.4.0
+  with:
+    # Repository name with owner. For example, actions/checkout
+    repository: # optional, default is ${{ github.repository }}
+    # The branch, tag or SHA to checkout. When checking out the repository that triggered a workflow, this defaults to the reference or SHA for that event.  Otherwise, uses the default branch.
 
-      # Actions to clone the repository
-      - name: Clone ecommerce cart service repository
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
+    ref: # optional
+    # Personal access token (PAT) used to fetch the repository. The PAT is configured with the local git config, which enables your scripts to run authenticated git commands. The post-job step removes the PAT.
 
-      # Actions to clear out cache
-      - name: Before Cache
-        run: |
-          rm -f  /home/.gradle/caches/modules-2/modules-2.lock
-          rm -fr /home/.gradle/caches/*/plugin-resolution/
+We recommend using a service account with the least permissions necessary. Also when generating a new PAT, select the least scopes necessary.
 
-      # Initial cache setup in cache locations
-      - name: Cache
-        uses: actions/cache@v2.1.5
-        with:
-          path: |
-            /home/.m2
-            /home/.gradle/caches/
-            /home/.gradle/wrapper/
-            /home/.sonar/cache
+[Learn more about creating and using encrypted secrets](https://help.github.com/en/actions/automating-your-workflow-with-github-actions/creating-and-using-encrypted-secrets)
 
-      # Installing Java JDK 11
-      - name: Setup Java JDK
-        uses: actions/setup-java@v1
-        with:
-          java-version: 11
+    token: # optional, default is ${{ github.token }}
+    # SSH key used to fetch the repository. The SSH key is configured with the local git config, which enables your scripts to run authenticated git commands. The post-job step removes the SSH key.
 
-      # Installing Python
-      - name: Setup Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: '3.8'
+We recommend using a service account with the least permissions necessary.
 
-      # Installing other Python related dependencies
-      - name: Installing additional python dependencies
-        run: |
-          sudo apt-get install python3
-          sudo apt-get install python3-pip
-          sudo apt-get install python3-setuptools
+[Learn more about creating and using encrypted secrets](https://help.github.com/en/actions/automating-your-workflow-with-github-actions/creating-and-using-encrypted-secrets)
 
-      # Setting up sonarqube for scanning the code to detects bugs, vulnerabilities and code smells
-      - name: SonarQube Scan
-        uses: kitabisa/sonarqube-action@v1.1.0
-        with:
-          # host is sonarqube server url f
-          host: ${{ secrets.SONARQUBE_HOST }}
-          #  the login or authentication token of a SonarQube user with Execute Analysis permission on the project
-          login: ${{ secrets.SONARQUBE_TOKEN }}
+    ssh-key: # optional
+    # Known hosts in addition to the user and global host key database. The public SSH keys for a host may be obtained using the utility `ssh-keyscan`. For example, `ssh-keyscan github.com`. The public key for github.com is always implicitly added.
 
-      - name: Before install
-        run: |
-          pip3 install --upgrade pip
-          pip3 install --upgrade awscli --user
+    ssh-known-hosts: # optional
+    # Whether to perform strict host key checking. When true, adds the options `StrictHostKeyChecking=yes` and `CheckHostIP=no` to the SSH command line. Use the input `ssh-known-hosts` to configure additional hosts.
 
-      # Setting up AWS configurations
-      - name: Configure AWS Credentials and profile Setup
-        env:
-          AWS_REGION: "us-east-1"
-        run: |
-          aws configure set aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws configure set aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws configure set region $AWS_REGION
-          aws configure set profile.orderhub.aws_access_key_id ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws configure set profile.orderhub.aws_secret_access_key ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    ssh-strict: # optional, default is true
+    # Whether to configure the token or SSH key with the local git config
+    persist-credentials: # optional, default is true
+    # Relative path under $GITHUB_WORKSPACE to place the repository
+    path: # optional
+    # Whether to execute `git clean -ffdx && git reset --hard HEAD` before fetching
+    clean: # optional, default is true
+    # Number of commits to fetch. 0 indicates all history for all branches and tags.
+    fetch-depth: # optional, default is 1
+    # Whether to download Git-LFS files
+    lfs: # optional
+    # Whether to checkout submodules: `true` to checkout submodules or `recursive` to recursively checkout submodules.
 
-      # Gradle builds for running unit test cases
-      - name: Script
-        run: |
-          echo "Building JAR and testing."
-          ./gradlew unitTest --refresh-dependencies generateBuildProperties jacocoTestReport sonarqube || travis_terminate 1;
+When the `ssh-key` input is not provided, SSH URLs beginning with `git@github.com:` are converted to HTTPS.
+
+    submodules: # optional
