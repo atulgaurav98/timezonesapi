@@ -1,0 +1,18 @@
+on:
+  pull_request:
+    branches: [ atulgaurav98-patch-2 ]
+env:
+  FNAME: "Atul"
+  SNAME: "Gaurav"
+jobs:
+  show:
+    name: "example for global env variable"
+    runs-on: [Linux]
+    steps:
+
+      - name: Checkout
+        uses: actions/checkout@v2.4.0
+
+      - name: show env variables
+        run: |
+          echo "your name is $FNAME $SNAME"
