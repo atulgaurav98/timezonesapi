@@ -7,7 +7,7 @@ env:
 jobs:
   show:
     name: "example for global env variable"
-    runs-on: [self-hosted,Linux,Ubuntu]
+    runs-on: [self-hosted]
     steps:
     
       - name: Checkout
