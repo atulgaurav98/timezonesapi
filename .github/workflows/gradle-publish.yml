@@ -1,5 +1,5 @@
 on:
-  pull_request:
+  push:
     branches: [ atulgaurav98-patch-1 ]
 env:
   FNAME: "Atul"
